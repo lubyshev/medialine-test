@@ -23,7 +23,10 @@ class AppAsset extends AssetBundle
         'css/site.css',
     ];
     public $js = [
-        'https://cdn.jsdelivr.net/npm/vue/dist/vue.js'
+        'https://cdn.jsdelivr.net/npm/vue/dist/vue.js',
+        'http://jpillora.com/jquery.rest/dist/1/jquery.rest.min.js',
+        'js/components.js',
+        'js/app.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',
