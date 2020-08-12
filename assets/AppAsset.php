@@ -26,6 +26,7 @@ class AppAsset extends AssetBundle
         'https://cdn.jsdelivr.net/npm/vue/dist/vue.js',
         'http://jpillora.com/jquery.rest/dist/1/jquery.rest.min.js',
         'js/components.js',
+        'js/blocks.js',
         'js/app.js',
     ];
     public $depends = [

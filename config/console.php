@@ -1,4 +1,5 @@
 <?php
+(Dotenv\Dotenv::createUnsafeImmutable(dirname(__DIR__)))->load();
 
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';

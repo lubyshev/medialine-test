@@ -4,17 +4,9 @@ declare(strict_types=1);
 namespace app\controllers;
 
 use app\services\AuthService;
-use yii\base\Controller;
 
-class AuthController extends Controller
+class AuthController extends ApiControllerAbstract
 {
-    public function beforeAction($action)
-    {
-        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-
-        return parent::beforeAction($action);
-    }
-
     public function actionIndex()
     {
         return (new AuthService())->getAuthForm();
@@ -29,5 +21,4 @@ class AuthController extends Controller
     {
         return (new AuthService())->logout();
     }
-
 }
