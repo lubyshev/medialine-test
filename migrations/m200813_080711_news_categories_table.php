@@ -1,9 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use app\models\Category;
 use app\models\News;
-use app\repositories\CategoriesMigrationRepository;
 use yii\db\Migration;
 
 /**
@@ -11,16 +9,12 @@ use yii\db\Migration;
  */
 class m200813_080711_news_categories_table extends Migration
 {
-
-    private CategoriesMigrationRepository $repo;
-
     /**
      * {@inheritdoc}
      */
     public function init()
     {
-        $this->db   = 'db';
-        $this->repo = new CategoriesMigrationRepository();
+        $this->db = 'db';
         parent::init();
     }
 
