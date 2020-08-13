@@ -7,6 +7,15 @@ use app\services\NewsService;
 
 class NewsController extends ApiControllerAbstract
 {
+    /**
+     * @inheritDoc
+     */
+    protected function actionsMethods(): array
+    {
+        return [
+            'index' => ['get'],
+        ];
+    }
 
     public function actionIndex()
     {

@@ -7,6 +7,18 @@ use app\services\AuthService;
 
 class AuthController extends ApiControllerAbstract
 {
+    /**
+     * @inheritDoc
+     */
+    protected function actionsMethods(): array
+    {
+        return [
+            'index'  => ['get'],
+            'login'  => ['post'],
+            'logout' => ['post'],
+        ];
+    }
+
     public function actionIndex()
     {
         return (new AuthService())->getAuthForm();
