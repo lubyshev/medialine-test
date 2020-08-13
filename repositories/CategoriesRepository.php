@@ -5,8 +5,6 @@ namespace app\repositories;
 
 use app\models\Category;
 use app\models\News;
-use app\models\NewsList;
-use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
 
 class CategoriesRepository
@@ -57,11 +55,12 @@ class CategoriesRepository
             ->where($where)
             ->orderBy(['title' => SORT_ASC]);
         foreach ($children->all() as $child) {
-            $items = $this->getTitleSortedChildren($child);
+            $newsCount = (new NewsRepository())->getCategoryNewsCount($child);
+            $items     = $this->getTitleSortedChildren($child);
             [$id, $title] = array_values($child->getAttributes(['id', 'title']));
             $result[] = [
                 'id'    => $id,
-                'title' => $title,
+                'title' => $title." ({$newsCount})",
                 'items' => empty($items) ? null : $items,
             ];
         }

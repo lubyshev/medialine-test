@@ -10,7 +10,6 @@ use yii\data\ActiveDataProvider;
 
 class NewsRepository
 {
-
     public function getBreadcrumbs(News $model): string
     {
         $result     = [];
@@ -63,5 +62,24 @@ class NewsRepository
             ],
         ]);
     }
+
+    public function getCategoryNewsCount(Category $category): int
+    {
+        return (int)NewsList::find()
+            ->alias('n')
+            ->leftJoin(
+                '{{%news_categories}} cn',
+                'n.`id` = cn.`newsId`'
+            )
+            ->leftJoin(
+                '{{%categories}} c',
+                'c.`id` = cn.`categoryId`'
+            )
+            ->where(['>=', 'c.`left`', $category->left])
+            ->andWhere(['<=', 'c.`right`', $category->right])
+            ->andWhere(['=', 'c.`subtree`', $category->subtree])
+            ->count();
+    }
+
 
 }

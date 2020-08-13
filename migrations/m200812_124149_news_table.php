@@ -55,7 +55,7 @@ class m200812_124149_news_table extends Migration
     private function populateNews()
     {
         $generator = require __DIR__.'/population/NewsGenerator.php';
-        foreach ($generator(20) as $item) {
+        foreach ($generator(200) as $item) {
             $this->insert('{{%news}}', $item);
         }
     }
