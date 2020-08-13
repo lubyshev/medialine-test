@@ -3,10 +3,20 @@ const Components = [
     id:   "auth",
     data: {
       props:    ["auth"],
-      template: '<li><a v-if="!auth.isLoggedIn" href="/auth/login" ' +
+      template: '<li><a v-if="!auth.isLoggedIn" href="#" ' +
                   'v-on:click.stop.prevent="$emit(\'login-click\')">Login</a>' +
-                  '<a v-if="auth.isLoggedIn" href="/auth/logout" ' +
+                  '<a v-if="auth.isLoggedIn" href="#" ' +
                   'v-on:click.stop.prevent="$emit(\'logout-click\')">Logout</a></li>'
+    }
+  },
+  {
+    id:   "navigation",
+    data: {
+      template: '<ul class="navbar-nav navbar-right nav">' +
+                  '<li><a href="#" ' +
+                  'v-on:click.stop.prevent="$emit(\'news-click\')">News</a></li>' +
+                  '<li><a href="#" ' +
+                  'v-on:click.stop.prevent="$emit(\'categories-click\')">Categories</a></li></ul>'
     }
   },
   {
@@ -35,6 +45,7 @@ const Components = [
                   '        <span class="sr-only">Previous</span>\n' +
                   '      </a>\n' +
                   '    </li>\n' +
+                  '    <li class="page-item"><span aria-hidden="true">{{ page }}&nbsp;/&nbsp;{{ page_count }}</span></li>\n' +
                   '    <li class="page-item" :class="(page >= page_count) ? \'disabled\' : false" >\n' +
                   '      <a @click.stop.prevent="$emit(\'next-click\')"\n' +
                   '         class="page-link" href="#" aria-label="Next">\n' +
@@ -46,5 +57,4 @@ const Components = [
                   '</nav>'
     }
   },
-
 ];

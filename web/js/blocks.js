@@ -1,8 +1,23 @@
 class Blocks {
   createAppBlocks(app, isLoggedIn) {
+    this.navigationBlock(app);
     this.authBlock(app, isLoggedIn);
     this.newsBlock(app);
     this.paginationBlock(app);
+  }
+
+  navigationBlock(app) {
+    app.blocks.navigation = new Vue({
+      el:      '#navigation',
+      methods: {
+        news_click:  function () {
+          alert("news_click");
+        },
+        categories_click:  function () {
+          alert("categories_click");
+        }
+      }
+    });
   }
 
   authBlock(app, isLoggedIn) {
@@ -50,7 +65,6 @@ class Blocks {
       }
     });
   }
-
 }
 
 const blocks = new Blocks();  // jshint ignore:line

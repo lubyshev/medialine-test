@@ -30,18 +30,22 @@ AppAsset::register($this);
 <div class="wrap">
     <?php
     NavBar::begin([
-        'brandLabel' => Yii::$app->name,
+        'brandLabel' => Html::img('@web/images/logo.png', ['alt' => Yii::$app->name]),
         'brandUrl'   => Yii::$app->homeUrl,
         'options'    => [
-            'class' => 'navbar-inverse navbar-fixed-top',
+            'class'               => 'navbar-inverse navbar-fixed-top',
+            '@click.stop.prevent' => 'categories_click',
         ],
     ]);
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items'   => [
-            '<auth id="auth" :auth="auth"'
+            '<auth :auth="auth" id="auth"'
             .' @login-click="login"'
             .' @logout-click="logout"></auth>',
+            '<navigation id="navigation"'
+            .' @news-click="news_click"'
+            .' @categories-click="categories_click"></navigation>',
         ],
     ]);
     NavBar::end();
