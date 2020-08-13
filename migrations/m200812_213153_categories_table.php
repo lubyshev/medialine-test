@@ -36,6 +36,7 @@ class m200812_213153_categories_table extends Migration
                     'level'     => $this->smallInteger()->notNull()->unsigned()->comment('Глубина.'),
                     'left'      => $this->integer()->notNull()->unsigned()->comment('Левый край.'),
                     'right'     => $this->integer()->notNull()->unsigned()->comment('Правый край.'),
+                    'parentId'  => $this->integer()->comment('Родительская категория.'),
                     'ownerId'   => $this->integer()->notNull()->comment('Создатель.'),
                     'createdAt' => $this->dateTime()->notNull()->comment('Создано.'),
                     'updatedAt' => $this->dateTime()->notNull()->comment('Обновлено.'),

@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace app\repositories;
 
 use app\models\Category;
-use yii\db\Command;
 
 class CategoriesMigrationRepository
 {
@@ -16,10 +15,11 @@ class CategoriesMigrationRepository
     public function createRootCategory(array $category): Category
     {
         unset($category['items']);
-        $category['subtree'] = self::getNewSubtree();
-        $category['level']   = 1;
-        $category['left']    = 1;
-        $category['right']   = 2;
+        $category['subtree']  = self::getNewSubtree();
+        $category['level']    = 1;
+        $category['left']     = 1;
+        $category['right']    = 2;
+        $category['parentId'] = null;
 
         $model = (new Category())->initCategory($category);
         $model->save();
@@ -33,10 +33,11 @@ class CategoriesMigrationRepository
         $parent->refresh();
         $this->createChildPlace($parent);
         $parent->refresh();
-        $category['subtree'] = $parent->subtree;
-        $category['level']   = $parent->level + 1;
-        $category['left']    = $parent->left + 1;
-        $category['right']   = $parent->right - 1;
+        $category['subtree']  = $parent->subtree;
+        $category['level']    = $parent->level + 1;
+        $category['left']     = $parent->right - 2;
+        $category['right']    = $parent->right - 1;
+        $category['parentId'] = $parent->id;
 
         $model = (new Category())->initCategory($category);
         $model->save();
@@ -54,54 +55,13 @@ class CategoriesMigrationRepository
         )->queryScalar();
     }
 
-    private function getChildrenUpdateCommand(): Command
-    {
-        static $command;
-        if (!$command) {
-            $table   = self::tableName();
-            $command = \Yii::$app->db->createCommand(
-                "UPDATE {$table} SET"
-                ." `left`=`left`+1,"
-                ." `right`=`right`+1"
-                ." WHERE `left`>:left AND `subtree`=:subtree"
-            );
-            $command->prepare();
-        }
-
-        return $command;
-    }
-
-    private function getParentsUpdateCommand(): Command
-    {
-        static $command;
-        if (!$command) {
-            $table   = self::tableName();
-            $command = \Yii::$app->db->createCommand(
-                "UPDATE {$table} SET"
-                ." `right`=`right`+:rightDelta"
-                ." WHERE `left`<=:left AND `subtree`=:subtree"
-            );
-            $command->prepare();
-        }
-
-        return $command;
-    }
-
     private function createChildPlace(Category $parent): void
     {
-        $this->getChildrenUpdateCommand()
-            ->bindValues([
-                ':left'    => $parent->left,
-                ':subtree' => $parent->subtree,
-            ])
-            ->execute();
-        $this->getParentsUpdateCommand()
-            ->bindValues([
-                ':rightDelta' => 2,
-                ':left'       => $parent->left,
-                ':subtree'    => $parent->subtree,
-            ])
-            ->execute();
+        do {
+            $parent->right += 2;
+            $parent->save();
+            $parent = $parent->parent();
+        } while ($parent);
     }
 
 }
