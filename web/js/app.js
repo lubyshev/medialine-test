@@ -20,7 +20,7 @@ class Application {
     for (var cId in Components) {
       this.registerComponent(Components[cId]);
     }
-    blocks.createAppBlocks(this, isLoggedIn);
+    blocks.createAppBlocks(this, this.pageId, isLoggedIn);
     return this;
   }
 
@@ -134,6 +134,7 @@ class Application {
             $self.addNewsItem(data.items[id]);
           }
           $self.setPages(data.page, data.pageCount);
+          $self.page('news').activatePage();
         } else {
           console.log('News:', data);
         }
@@ -146,20 +147,20 @@ class Application {
   }
 
   addNewsItem(item) {
-    this.blocks.news.$data.news.push(
+    this.blocks.news.$data.items.push(
       {
-        id: item.id,
+        id:          item.id,
         breadcrumbs: item.breadcrumbs,
-        date: item.date,
-        user: item.userName,
-        title: item.title,
-        content: item.content
+        date:        item.date,
+        user:        item.userName,
+        title:       item.title,
+        content:     item.content
       }
     );
   }
 
   clearNews() {
-    this.blocks.news.$data.news = [];
+    this.blocks.news.$data.items = [];
   }
 
   setPages(page, pageCount) {
@@ -193,6 +194,11 @@ class Application {
     let client = null;
     let result = null;
     switch ($route) {
+      case 'categories':
+        client = new $.RestClient('/');
+        client.add('categories');
+        result = client.categories;
+        break;
       case 'news':
         client = new $.RestClient('/');
         client.add('news');
@@ -219,8 +225,68 @@ class Application {
   }
 
   loadCategory(event, categoryId) {
-    console.log("Load news category: " + categoryId);
+    this.loadNewsCategory(categoryId);
     event.preventDefault();
+  }
+
+  loadNewsCategory(categoryId) {
+    console.log("Load news category: " + categoryId);
+  }
+
+  page(pageId) {
+    this.pageId = pageId;
+    return this;
+  }
+
+  loadCategoriesList() {
+    let $self = this;
+    this.getRestClient('categories').read({})
+      .done(function (data) {
+        $self.applyCommonResponseRules(data.commonRules);
+        if (data.success) {
+          $self.clearCategories();
+          $self.addCategoriesItems(data.items);
+          $self.page('categories').activatePage();
+        } else {
+          console.log('Categories:', data);
+        }
+      })
+      .fail(function (data) {
+        let error = data.responseJSON.error;
+        alert("Ошибка " + error.statusCode + "!\n" + error.message);
+        console.log('loadNews Error:', error);
+      });
+  }
+
+  activatePage() {
+    let h1 = $("#jumbotron h1:first");
+    let p = $("#jumbotron p:first");
+    switch (this.pageId) {
+      case 'news':
+        this.blocks.categories.$data.active = false;
+        this.blocks.pagination.$data.active = true;
+        this.blocks.news.$data.active = true;
+        h1.text('Новости');
+        p.text('Последние новости, события, факты.');
+        break;
+      case 'categories':
+        this.blocks.categories.$data.active = true;
+        this.blocks.pagination.$data.active = false;
+        this.blocks.news.$data.active = false;
+        h1.text('Рубрики');
+        p.text('Все рубрики портала.');
+        break;
+    }
+
+    return this;
+  }
+
+  clearCategories() {
+    this.blocks.categories.$data.items = [];
+  }
+
+  addCategoriesItems(items) {
+    this.blocks.categories.$data.items = items;
   }
 
 }

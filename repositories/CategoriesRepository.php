@@ -5,6 +5,8 @@ namespace app\repositories;
 
 use app\models\Category;
 use app\models\News;
+use app\models\NewsList;
+use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
 
 class CategoriesRepository
@@ -36,6 +38,35 @@ class CategoriesRepository
             ->andWhere(['<', 'level', $category->level])
             ->andWhere(['=', 'subtree', $category->subtree])
             ->orderBy(['level' => SORT_ASC]);
+    }
+
+    public function getTitleSortedList()
+    {
+        return $this->getTitleSortedChildren(null);
+    }
+
+    private function getTitleSortedChildren(?Category $parent): array
+    {
+        $result = [];
+        if ($parent) {
+            $where = ['=', 'parentId', $parent->id];
+        } else {
+            $where = 'isnull(`parentId`)';
+        }
+        $children = Category::find()
+            ->where($where)
+            ->orderBy(['title' => SORT_ASC]);
+        foreach ($children->all() as $child) {
+            $items = $this->getTitleSortedChildren($child);
+            [$id, $title] = array_values($child->getAttributes(['id', 'title']));
+            $result[] = [
+                'id'    => $id,
+                'title' => $title,
+                'items' => empty($items) ? null : $items,
+            ];
+        }
+
+        return $result;
     }
 
 }

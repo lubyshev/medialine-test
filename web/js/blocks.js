@@ -1,20 +1,21 @@
 class Blocks {
-  createAppBlocks(app, isLoggedIn) {
+  createAppBlocks(app, pageId, isLoggedIn) {
     this.navigationBlock(app);
     this.authBlock(app, isLoggedIn);
-    this.newsBlock(app);
-    this.paginationBlock(app);
+    this.newsBlock(app, pageId === 'news');
+    this.paginationBlock(app, pageId === 'news');
+    this.categoriesBlock(app, pageId === 'categories');
   }
 
   navigationBlock(app) {
     app.blocks.navigation = new Vue({
       el:      '#navigation',
       methods: {
-        news_click:  function () {
-          alert("news_click");
+        news_click:       function () {
+          app.loadNews(1);
         },
-        categories_click:  function () {
-          alert("categories_click");
+        categories_click: function () {
+          app.loadCategoriesList();
         }
       }
     });
@@ -39,21 +40,38 @@ class Blocks {
     });
   }
 
-  newsBlock(app) {
+  newsBlock(app, active) {
     app.blocks.news = new Vue({
       el:   '#news',
       data: {
-        news: null,
+        items:  null,
+        active: active
       }
     });
   }
 
-  paginationBlock(app) {
+  categoriesBlock(app, active) {
+    app.blocks.categories = new Vue({
+      el:      '#categories',
+      data:    {
+        items:  null,
+        active: active
+      },
+      methods: {
+        category_click: function (categoryId) {
+          app.loadNewsCategory(categoryId);
+        }
+      }
+    });
+  }
+
+  paginationBlock(app, active) {
     app.blocks.pagination = new Vue({
       el:      '#pagination',
       data:    {
-        page:      0,
-        page_count: 0
+        page:       0,
+        page_count: 0,
+        active:     active
       },
       methods: {
         nextPage: function () {

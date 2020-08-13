@@ -13,7 +13,10 @@ class NewsService
         'createdAt' => SORT_DESC,
     ];
 
-    public function getList()
+    /**
+     * @return array
+     */
+    public function getList(): array
     {
         $provider = (new NewsRepository())->getListDataProvider(
             self::NEWS_PER_PAGE,

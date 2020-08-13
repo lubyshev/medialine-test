@@ -72,7 +72,7 @@ AppAsset::register($this);
 
 <script type="text/javascript">
   window.onload = function () {
-    app.init(<?= Yii::$app->user->isGuest ? 'false' : 'true' ?>).run();
+    app.page('news').init(<?= Yii::$app->user->isGuest ? 'false' : 'true' ?>).run();
   };
 </script>
 

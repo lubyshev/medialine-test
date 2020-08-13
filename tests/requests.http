@@ -9,3 +9,7 @@ Content-Type: application/x-www-form-urlencoded
 ### Send GET request to news list
 GET http://medialine.loc/news
 Content-Type: application/json
+
+### Send GET request to news list
+GET http://medialine.loc/categories
+Content-Type: application/json
