@@ -25,7 +25,7 @@ class Application {
   }
 
   registerComponent(component) {
-    console.log('Register component:', component);
+    console.log('Register component: ' + component.id);
     Vue.component(
       component.id,
       component.data
@@ -39,14 +39,13 @@ class Application {
 
   login() {
     let $self = this;
-    let client = new $.RestClient('/');
-    client.add('auth');
-    client.auth.read().done(function (data) {
-      console.log('getLoginForm:', data);
-      if (data.success && data.schema === "form-dialog") {
-        $self.showDialog(data.data);
-      }
-    });
+    this.getRestClient('auth').read()
+      .done(function (data) {
+        $self.applyCommonResponseRules(data.commonRules);
+        if (data.success && data.schema === "form-dialog") {
+          $self.showDialog(data.data);
+        }
+      });
   }
 
   showDialog(formData) {
@@ -80,18 +79,17 @@ class Application {
   postLoginForm() {
     let data = this.blocks.login_dialog;
     let $self = this;
-    let client = new $.RestClient('/auth/');
     let formData = {
       'login':    data.login,
       'password': data.password,
       'csrf':     data.csrf,
     };
-    client.add('login');
-    client.login.create(formData)
+    this.getRestClient('login').create(formData)
       .done(function (data) {
-        console.log('postLoginForm:', data);
+        $self.applyCommonResponseRules(data.commonRules);
         $self.closeDialog();
         if (data.success) {
+          console.log('User login.');
           $self.user = data.user;
           $self.markAsLoggedIn();
         }
@@ -108,10 +106,9 @@ class Application {
 
   logout() {
     let $self = this;
-    let client = new $.RestClient('/auth/');
-    client.add('logout');
-    client.logout.create({})
+    this.getRestClient('logout').create({})
       .done(function (data) {
+        $self.applyCommonResponseRules(data.commonRules);
         if (data.success) {
           console.log('User logout.');
           $self.user = null;
@@ -128,10 +125,9 @@ class Application {
 
   loadNews(page) {
     let $self = this;
-    let client = new $.RestClient('/');
-    client.add('news');
-    client.news.read({page: page})
+    this.getRestClient('news').read({page: page})
       .done(function (data) {
+        $self.applyCommonResponseRules(data.commonRules);
         if (data.success) {
           $self.clearNews();
           for (let id in data.items) {
@@ -174,6 +170,45 @@ class Application {
 
   prevPage() {
     this.loadNews(this.getPage() - 1);
+  }
+
+  applyCommonResponseRules(rules) {
+    if (rules) {
+      if (rules.loggedIn) {
+        this.markAsLoggedIn();
+      } else {
+        this.markAsLoggedOut();
+      }
+    }
+  }
+
+  getRestClient($route) {
+    let client = null;
+    let result = null;
+    switch ($route) {
+      case 'news':
+        client = new $.RestClient('/');
+        client.add('news');
+        result = client.news;
+        break;
+      case 'auth':
+        client = new $.RestClient('/');
+        client.add('auth');
+        result = client.auth;
+        break;
+      case 'login':
+        client = new $.RestClient('/auth/');
+        client.add('login');
+        result = client.login;
+        break;
+      case 'logout':
+        client = new $.RestClient('/auth/');
+        client.add('logout');
+        result = client.logout;
+        break;
+    }
+
+    return result;
   }
 
 }
