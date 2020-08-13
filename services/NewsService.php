@@ -30,15 +30,17 @@ class NewsService
 
     public function getCategoryList(int $categoryId): array
     {
-        $provider              = (new NewsRepository())->getCategoryNewsListDataProvider(
-            $categoryId,
+        $category = Category::findOne(['id' => $categoryId]);
+        $provider = (new NewsRepository())->getCategoryNewsListDataProvider(
+            $category,
             self::NEWS_PER_PAGE,
             self::DEFAULT_ORDER
         );
-        $data                  = $this->getNewsListFromDataProvider($provider);
-        $data['categoryTitle'] = (Category::findOne(['id' => $categoryId]))->title;
 
-        return $data;
+        return array_merge(
+            $this->getNewsListFromDataProvider($provider),
+            ['categoryTitle' => $category->title]
+        );
     }
 
     private function getNewsListFromDataProvider(ActiveDataProvider $provider): array

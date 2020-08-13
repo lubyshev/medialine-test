@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace app\repositories;
 
+use app\models\Category;
 use app\models\News;
 use app\models\NewsList;
 use yii\data\ActiveDataProvider;
@@ -38,16 +39,22 @@ class NewsRepository
         ]);
     }
 
-    public function getCategoryNewsListDataProvider(int $categoryId, int $limit, array $order): ActiveDataProvider
+    public function getCategoryNewsListDataProvider(Category $category, int $limit, array $order): ActiveDataProvider
     {
         return new ActiveDataProvider([
             'query'      => NewsList::find()
                 ->alias('n')
                 ->leftJoin(
-                    '{{%news_categories}} c',
-                    'n.`id` = c.`newsId`'
+                    '{{%news_categories}} cn',
+                    'n.`id` = cn.`newsId`'
                 )
-                ->where(['=', 'c.`categoryId`', $categoryId]),
+                ->leftJoin(
+                    '{{%categories}} c',
+                    'c.`id` = cn.`categoryId`'
+                )
+                ->where(['>=', 'c.`left`', $category->left])
+                ->andWhere(['<=', 'c.`right`', $category->right])
+                ->andWhere(['=', 'c.`subtree`', $category->subtree]),
             'pagination' => [
                 'pageSize' => $limit,
             ],
