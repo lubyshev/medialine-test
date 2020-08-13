@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace app\services;
 
+use app\models\NewsList;
 use app\repositories\NewsRepository;
 
 class NewsService
@@ -14,10 +15,7 @@ class NewsService
 
     public function getList()
     {
-        $page = (int)\Yii::$app->request->get('page');
-        !$page && $page = 1;
         $provider = (new NewsRepository())->getListDataProvider(
-            $page,
             self::NEWS_PER_PAGE,
             self::DEFAULT_ORDER
         );
@@ -29,6 +27,7 @@ class NewsService
             'pageCount' => $provider->pagination->pageCount,
         ];
         foreach ($provider->getModels() as $item) {
+            /** @var NewsList $item*/
             $data['items'][$item->id] = $item;
         }
 

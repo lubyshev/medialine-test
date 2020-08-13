@@ -147,7 +147,14 @@ class Application {
 
   addNewsItem(item) {
     this.blocks.news.$data.news.push(
-      {id: item.id, date: item.createdAt, title: item.title, content: item.content}
+      {
+        id: item.id,
+        breadcrumbs: item.breadcrumbs,
+        date: item.date,
+        user: item.userName,
+        title: item.title,
+        content: item.content
+      }
     );
   }
 
@@ -209,6 +216,11 @@ class Application {
     }
 
     return result;
+  }
+
+  loadCategory(event, categoryId) {
+    console.log("Load news category: " + categoryId);
+    event.preventDefault();
   }
 
 }

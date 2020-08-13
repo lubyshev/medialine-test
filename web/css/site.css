@@ -127,3 +127,7 @@ a.desc:after {
     display: block;
     margin-top: -15px;
 }
+
+.breadcrumb {
+    margin-bottom: 0;
+ }

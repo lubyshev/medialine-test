@@ -27,8 +27,13 @@ const Components = [
                   '  <li class="list-group-item active">' +
                   '    ' +
                   '    <h3>{{ item.title }}</h3></li>\n' +
-                  '  <li class="list-group-item">&nbsp;<span class="badge badge-warning">{{ item.date }}</span></li>\n' +
-                  '  <li class="list-group-item" v-html="item.content"></li>\n' +
+                  '  <li class="list-group-item">' +
+                  '<span v-html="item.breadcrumbs"></span>' +
+                  '</li>\n' +
+                  '  <li class="list-group-item">' +
+                  '    <span class="badge badge-warning">Опубликовал {{ item.user }}, {{ item.date }}</span>' +
+                  '    <span v-html="item.content"></span>' +
+                  '</li>\n' +
                   '</ul></li>'
     }
   },
