@@ -40,20 +40,21 @@ class NewsRepository
 
     public function getCategoryNewsListDataProvider(Category $category, int $limit, array $order): ActiveDataProvider
     {
+        $newsIds = Category::find()
+            ->select('cn.`newsId`')
+            ->distinct()
+            ->from('{{%news_categories}} cn')
+            ->leftJoin(
+                '{{%categories}} c',
+                'c.`id` = cn.`categoryId`'
+            )
+            ->where(['>=', 'c.`left`', $category->left])
+            ->andWhere(['<=', 'c.`right`', $category->right])
+            ->andWhere(['=', 'c.`subtree`', $category->subtree])
+            ->column();
+
         return new ActiveDataProvider([
-            'query'      => NewsList::find()
-                ->alias('n')
-                ->leftJoin(
-                    '{{%news_categories}} cn',
-                    'n.`id` = cn.`newsId`'
-                )
-                ->leftJoin(
-                    '{{%categories}} c',
-                    'c.`id` = cn.`categoryId`'
-                )
-                ->where(['>=', 'c.`left`', $category->left])
-                ->andWhere(['<=', 'c.`right`', $category->right])
-                ->andWhere(['=', 'c.`subtree`', $category->subtree]),
+            'query'      => NewsList::find()->where(['in', '`id`', $newsIds]),
             'pagination' => [
                 'pageSize' => $limit,
             ],
@@ -65,12 +66,10 @@ class NewsRepository
 
     public function getCategoryNewsCount(Category $category): int
     {
-        return (int)NewsList::find()
-            ->alias('n')
-            ->leftJoin(
-                '{{%news_categories}} cn',
-                'n.`id` = cn.`newsId`'
-            )
+        return (int)Category::find()
+            ->select('cn.`newsId`')
+            ->distinct()
+            ->from('{{%news_categories}} cn')
             ->leftJoin(
                 '{{%categories}} c',
                 'c.`id` = cn.`categoryId`'
