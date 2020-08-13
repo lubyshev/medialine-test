@@ -14,12 +14,18 @@ class NewsController extends ApiControllerAbstract
     {
         return [
             'index' => ['get'],
+            'category' => ['get'],
         ];
     }
 
     public function actionIndex()
     {
         return (new NewsService())->getList();
+    }
+
+    public function actionCategory(int $id)
+    {
+        return (new NewsService())->getCategoryList($id);
     }
 
 }

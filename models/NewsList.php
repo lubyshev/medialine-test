@@ -14,6 +14,7 @@ use app\repositories\NewsRepository;
  * @property integer $ownerId
  * @property string  $createdAt
  * @property string  $updatedAt
+ * @property string  $userName
  * @property string  $date
  * @property string  $breadcrumbs
  */

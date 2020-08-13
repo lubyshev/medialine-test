@@ -59,7 +59,7 @@ class Blocks {
       },
       methods: {
         category_click: function (categoryId) {
-          app.loadNewsCategory(categoryId);
+          app.loadCategoryNews(categoryId, 1);
         }
       }
     });

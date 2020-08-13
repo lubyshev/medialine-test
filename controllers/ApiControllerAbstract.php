@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
-use yii\base\Controller;
+use yii\web\Controller;
 use yii\filters\VerbFilter;
 
 abstract class ApiControllerAbstract extends Controller

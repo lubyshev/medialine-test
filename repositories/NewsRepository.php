@@ -9,18 +9,6 @@ use yii\data\ActiveDataProvider;
 
 class NewsRepository
 {
-    public function getListDataProvider(int $limit, array $order): ActiveDataProvider
-    {
-        return new ActiveDataProvider([
-            'query'      => NewsList::find(),
-            'pagination' => [
-                'pageSize' => $limit,
-            ],
-            'sort'       => [
-                'defaultOrder' => $order,
-            ],
-        ]);
-    }
 
     public function getBreadcrumbs(News $model): string
     {
@@ -35,6 +23,38 @@ class NewsRepository
         }
 
         return implode("\n", $result);
+    }
+
+    public function getNewsListDataProvider(int $limit, array $order)
+    {
+        return new ActiveDataProvider([
+            'query'      => NewsList::find(),
+            'pagination' => [
+                'pageSize' => $limit,
+            ],
+            'sort'       => [
+                'defaultOrder' => $order,
+            ],
+        ]);
+    }
+
+    public function getCategoryNewsListDataProvider(int $categoryId, int $limit, array $order): ActiveDataProvider
+    {
+        return new ActiveDataProvider([
+            'query'      => NewsList::find()
+                ->alias('n')
+                ->leftJoin(
+                    '{{%news_categories}} c',
+                    'n.`id` = c.`newsId`'
+                )
+                ->where(['=', 'c.`categoryId`', $categoryId]),
+            'pagination' => [
+                'pageSize' => $limit,
+            ],
+            'sort'       => [
+                'defaultOrder' => $order,
+            ],
+        ]);
     }
 
 }

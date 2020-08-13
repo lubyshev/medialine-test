@@ -2,6 +2,7 @@ class Application {
 
   constructor() {
     this.blocks = {};
+    this.categoryId = null;
   }
 
   isLoggedIn() {
@@ -125,18 +126,19 @@ class Application {
 
   loadNews(page) {
     let $self = this;
-    this.getRestClient('news').read({page: page})
+    this.getRestClient("news").read({page: page})
       .done(function (data) {
         $self.applyCommonResponseRules(data.commonRules);
         if (data.success) {
+          $self.categoryId = null;
           $self.clearNews();
           for (let id in data.items) {
             $self.addNewsItem(data.items[id]);
           }
           $self.setPages(data.page, data.pageCount);
-          $self.page('news').activatePage();
+          $self.page("news").activatePage();
         } else {
-          console.log('News:', data);
+          console.log("loadNews:", data);
         }
       })
       .fail(function (data) {
@@ -173,11 +175,19 @@ class Application {
   }
 
   nextPage() {
-    this.loadNews(this.getPage() + 1);
+    if (!this.categoryId) {
+      this.loadNews(this.getPage() + 1);
+    } else {
+      this.loadCategoryNews(this.categoryId, this.getPage() + 1);
+    }
   }
 
   prevPage() {
-    this.loadNews(this.getPage() - 1);
+    if (!this.categoryId) {
+      this.loadNews(this.getPage() - 1);
+    } else {
+      this.loadCategoryNews(this.categoryId, this.getPage() - 1);
+    }
   }
 
   applyCommonResponseRules(rules) {
@@ -192,32 +202,38 @@ class Application {
 
   getRestClient($route) {
     let client = null;
+    const opts = {stripTrailingSlash: true};
     let result = null;
     switch ($route) {
       case 'categories':
         client = new $.RestClient('/');
-        client.add('categories');
+        client.add('categories', opts);
         result = client.categories;
         break;
       case 'news':
         client = new $.RestClient('/');
-        client.add('news');
+        client.add('news', opts);
         result = client.news;
         break;
       case 'auth':
         client = new $.RestClient('/');
-        client.add('auth');
+        client.add('auth', opts);
         result = client.auth;
         break;
       case 'login':
         client = new $.RestClient('/auth/');
-        client.add('login');
+        client.add('login', opts);
         result = client.login;
         break;
       case 'logout':
         client = new $.RestClient('/auth/');
-        client.add('logout');
+        client.add('logout', opts);
         result = client.logout;
+        break;
+      case 'categoryNews':
+        client = new $.RestClient('/news/');
+        client.add('category', opts);
+        result = client.category;
         break;
     }
 
@@ -225,11 +241,36 @@ class Application {
   }
 
   loadCategory(event, categoryId) {
-    this.loadNewsCategory(categoryId);
+    this.loadCategoryNews(categoryId, 1);
     event.preventDefault();
   }
 
-  loadNewsCategory(categoryId) {
+  loadCategoryNews(categoryId, page) {
+    let $self = this;
+    this.getRestClient("categoryNews").read(categoryId, {page: page})
+      .done(function (data) {
+        $self.applyCommonResponseRules(data.commonRules);
+        if (data.success) {
+          $self.categoryId = categoryId;
+          $self.clearNews();
+          for (let id in data.items) {
+            $self.addNewsItem(data.items[id]);
+          }
+          $self.setPages(data.page, data.pageCount);
+          $self.page("news").activatePage();
+          $("#jumbotron h1:first").text("Новости");
+          $("#jumbotron p:first").html("Все новости из рубрики &laquo;" + data.categoryTitle + "&raquo;.");
+
+        } else {
+          console.log("Categories:", data);
+        }
+      })
+      .fail(function (data) {
+        let error = data.responseJSON.error;
+        alert("Ошибка " + error.statusCode + "!\n" + error.message);
+        console.log('loadCategoriesList Error:', error);
+      });
+
     console.log("Load news category: " + categoryId);
   }
 
@@ -244,6 +285,7 @@ class Application {
       .done(function (data) {
         $self.applyCommonResponseRules(data.commonRules);
         if (data.success) {
+          $self.categoryId = null;
           $self.clearCategories();
           $self.addCategoriesItems(data.items);
           $self.page('categories').activatePage();
@@ -254,7 +296,7 @@ class Application {
       .fail(function (data) {
         let error = data.responseJSON.error;
         alert("Ошибка " + error.statusCode + "!\n" + error.message);
-        console.log('loadNews Error:', error);
+        console.log('loadCategoriesList Error:', error);
       });
   }
 

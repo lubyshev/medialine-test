@@ -68,7 +68,7 @@ const Components = [ // jshint ignore:line
       props:    ["item"],
       methods:  {
         handleclick(item) {
-          app.loadNewsCategory(item.id);
+          app.loadCategoryNews(item.id, 1);
         }
       },
       template: '<li class="list-categories-item">' +
