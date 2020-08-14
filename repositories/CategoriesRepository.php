@@ -9,7 +9,6 @@ use yii\db\ActiveQuery;
 
 class CategoriesRepository
 {
-
     /**
      * @param News $model
      *
@@ -38,6 +37,9 @@ class CategoriesRepository
             ->orderBy(['level' => SORT_ASC]);
     }
 
+    /**
+     * @return Category[]
+     */
     public function getTitleSortedList(): array
     {
         return $this->getTitleSortedChildren(null);
