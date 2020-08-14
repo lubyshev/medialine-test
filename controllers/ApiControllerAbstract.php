@@ -32,6 +32,7 @@ abstract class ApiControllerAbstract extends Controller
 
     public function beforeAction($action)
     {
+        $this->enableCsrfValidation = false;
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
         return parent::beforeAction($action);
