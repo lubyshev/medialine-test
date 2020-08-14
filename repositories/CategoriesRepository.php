@@ -38,7 +38,7 @@ class CategoriesRepository
             ->orderBy(['level' => SORT_ASC]);
     }
 
-    public function getTitleSortedList()
+    public function getTitleSortedList(): array
     {
         return $this->getTitleSortedChildren(null);
     }

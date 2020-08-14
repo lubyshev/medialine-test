@@ -25,7 +25,7 @@ class NewsRepository
         return implode("\n", $result);
     }
 
-    public function getNewsListDataProvider(int $limit, array $order)
+    public function getNewsListDataProvider(int $limit, array $order): ActiveDataProvider
     {
         return new ActiveDataProvider([
             'query'      => NewsList::find(),
@@ -38,8 +38,11 @@ class NewsRepository
         ]);
     }
 
-    public function getCategoryNewsListDataProvider(Category $category, int $limit, array $order): ActiveDataProvider
-    {
+    public function getCategoryNewsListDataProvider(
+        Category $category,
+        int $limit,
+        array $order
+    ): ActiveDataProvider {
         $newsIds = Category::find()
             ->select('cn.`newsId`')
             ->distinct()
@@ -79,6 +82,5 @@ class NewsRepository
             ->andWhere(['=', 'c.`subtree`', $category->subtree])
             ->count();
     }
-
 
 }
